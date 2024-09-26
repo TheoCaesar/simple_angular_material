@@ -1,31 +1,44 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {MatIconModule} from "@angular/material/icon";
 import {trigger, transition, style, animate} from "@angular/animations"
+import { NgClass, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-image-slider',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, NgClass, NgFor],
   template: `
     <div class="slider-container">
-      <button mat-icon-button class="nav-button">
+      <button mat-icon-button class="nav-button" 
+        (click)="showPrevImage()">
         <mat-icon class="mat-18">chevron_left</mat-icon>
       </button>
       <div class="image-slider">
-        <img [@fadeInOut]="currentIndex" [src]="images[currentIndex]" alt="image" >
+        <img [@fadeInOut]="currentIndex" 
+          [src]="images[currentIndex]" alt="image" >
         <div class="overlay">
           <h2>Car Name</h2>
           <p>
-            Lorem ipsum odor amet, consectetuer adipiscing elit. Nullam nibh ex litora curabitur habitasse. 
+            Lorem ipsum odor amet, consectetuer adipiscing elit. 
+            Nullam nibh ex litora curabitur habitasse. 
             Aliquam lobortis auctor magnis fringilla dis blandit quisque suspendisse.             
           </p>
           <button mat-raised-button color="primary">Shop Now</button>
         </div> 
       </div>
 
-      <button mat-icon-button class="nav-button">
+      <button mat-icon-button class="nav-button" 
+        (click)="showNextImage()">
         <mat-icon class="mat-18">chevron_right</mat-icon>
       </button>
+    </div>
+
+    <div class='indicators'>
+      <div class="indicator" 
+        [ngClass] = "{active: i === currentIndex}"
+        *ngFor="let img of images; let i = index" 
+        (click)="currentIndex = i">
+      </div>
     </div>
   `,
   styles: `
@@ -60,6 +73,24 @@ import {trigger, transition, style, animate} from "@angular/animations"
       transition: opacity 0.3s ease-in-out;
       width: 80%;
     }
+
+    .indicators {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .indicator.active { background-color: #333 ; }
+    img {max-width: 100% ; max-height: 100%}
   `,
   animations: [
     trigger('fadeInOut',[
@@ -79,18 +110,18 @@ export class ImageSliderComponent implements OnInit, OnDestroy{
     './../../../assets/sliders/car2.jpg',
     './../../../assets/sliders/car3.jpg'
   ];
-
+  private interval: any;
   currentIndex = 0;
 
   showNextImage(){
-    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    this.currentIndex = 
+      (this.currentIndex + 1) % this.images.length;
   }
 
   showPrevImage(){
-    this.currentIndex = (this.currentIndex + 1 + this.images.length) % this.images.length;
+    this.currentIndex = 
+    (this.currentIndex - 1 + this.images.length) % this.images.length;
   }
-
-  private interval: any;
 
   private startAutoSlide() {
     this.interval = setInterval(() => {
